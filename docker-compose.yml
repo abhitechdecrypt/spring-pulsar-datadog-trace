@@ -1,0 +1,38 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - DD_AGENT_HOST=datadog-agent
+      - DD_LOGS_INJECTION=true
+      - DD_SERVICE=abhi-pulsar-msg
+      - DD_ENV=dev
+      - DD_VERSION=0.0.1-SNAPSHOT
+      - PULSAR_SERVICE_URL=pulsar://pulsar:6650
+    depends_on:
+      - pulsar
+      - datadog-agent
+
+  pulsar:
+    image: apachepulsar/pulsar:3.2.0
+    hostname: pulsar
+    command: bin/pulsar standalone
+    ports:
+      - "6650:6650" # Pulsar protocol
+      - "8082:8080" # Pulsar admin
+
+  datadog-agent:
+    image: datadog/agent:7
+    environment:
+      - DD_API_KEY=7deebe280ef18f352d36414c76ea6f42 # Replace with your Datadog API key
+      - DD_SITE=datadoghq.com
+      - DD_APM_ENABLED=true
+      - DD_LOGS_ENABLED=true
+      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
+    ports:
+      - "8126:8126" # APM port
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
