@@ -1,0 +1,10 @@
+schema user {
+    document user {
+        field name type string {
+            indexing: summary | index
+        }
+        field email type string {
+            indexing: summary | index
+        }
+    }
+}
