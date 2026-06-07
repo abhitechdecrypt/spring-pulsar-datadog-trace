@@ -4,20 +4,35 @@ services:
     ports:
       - "8080:8080"
     environment:
+      # Datadog configuration
       - DD_AGENT_HOST=datadog-agent
       - DD_LOGS_INJECTION=true
       - DD_SERVICE=abhi-pulsar-msg
       - DD_ENV=dev
       - DD_VERSION=0.0.1-SNAPSHOT
+      # Pulsar configuration
       - PULSAR_SERVICE_URL=pulsar://pulsar:6650
+      - SPRING_PULSAR_CLIENT_SERVICE_URL=pulsar://pulsar:6650
     depends_on:
-      - pulsar
-      - datadog-agent
+      pulsar:
+        condition: service_started
+      datadog-agent:
+        condition: service_started
 
   pulsar:
     image: apachepulsar/pulsar:3.2.0
     hostname: pulsar
-    command: bin/pulsar standalone
+    command:
+      - /bin/bash
+      - -c
+      - |
+        bin/pulsar standalone &
+        PULSAR_PID=$!
+        until bin/pulsar-admin brokers healthcheck; do echo 'Waiting for Pulsar to start...'; sleep 5; done
+        bin/pulsar-admin tenants create public --allowed-clusters standalone || true
+        bin/pulsar-admin namespaces create public/default || true
+        echo 'Pulsar is fully up and running!'
+        wait $PULSAR_PID
     ports:
       - "6650:6650" # Pulsar protocol
       - "8082:8080" # Pulsar admin
@@ -28,6 +43,7 @@ services:
       - DD_API_KEY= Replace with your Datadog API key
       - DD_SITE=datadoghq.com
       - DD_APM_ENABLED=true
+      - DD_APM_NON_LOCAL_TRAFFIC=true # CRITICAL: Allows the Spring Boot container to send APM traces to this container
       - DD_LOGS_ENABLED=true
       - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
     ports:
