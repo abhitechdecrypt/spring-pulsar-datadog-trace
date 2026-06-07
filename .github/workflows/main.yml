@@ -1,0 +1,37 @@
+name: Auto Create Pull Request
+
+on:
+  # Triggers the workflow automatically on every push
+  push:
+    branches-ignore:
+      - main
+      - master # Ignore pushes directly to default branches (adjust if your default is different)
+  
+  # Allows you to trigger the workflow manually from the GitHub Actions UI
+  workflow_dispatch:
+
+# Grant the workflow permission to create a pull request
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request
+        env:
+          # Use the default GitHub token provided by GitHub Actions
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Try to create a PR from the current branch to the 'main' branch.
+          # The '|| true' ensures the workflow doesn't fail if a PR already exists for this branch.
+          gh pr create \
+            --base main \
+            --head "${{ github.ref_name }}" \
+            --title "Automated PR: Updates from ${{ github.ref_name }}" \
+            --body "This pull request was automatically created by a GitHub Actions workflow." \
+            || echo "A Pull Request for this branch already exists."
