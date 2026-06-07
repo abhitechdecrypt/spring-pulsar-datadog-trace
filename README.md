@@ -70,3 +70,8 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 -   **APM**: The application is instrumented with OpenTelemetry to trace requests across the producer and consumer. Spans are named `pulsar.producer` and `pulsar.consumer` with the appropriate `SpanKind`. Traces will be sent to your Datadog account.
 -   **Logging**: The application uses SLF4J for structured logging. Logs are collected by the Datadog agent and will appear in your Datadog account.
+
+![img.png](img.png)
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
+![img_3.png](img_3.png)
