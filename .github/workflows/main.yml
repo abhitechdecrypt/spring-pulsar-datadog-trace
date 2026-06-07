@@ -25,7 +25,7 @@ jobs:
       - name: Create Pull Request
         env:
           # Use the default GitHub token provided by GitHub Actions
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
         run: |
           # Try to create a PR from the current branch to the 'main' branch.
           # The '|| true' ensures the workflow doesn't fail if a PR already exists for this branch.
