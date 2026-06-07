@@ -25,7 +25,7 @@ services:
   datadog-agent:
     image: datadog/agent:7
     environment:
-      - DD_API_KEY=7deebe280ef18f352d36414c76ea6f42 # Replace with your Datadog API key
+      - DD_API_KEY= Replace with your Datadog API key
       - DD_SITE=datadoghq.com
       - DD_APM_ENABLED=true
       - DD_LOGS_ENABLED=true
